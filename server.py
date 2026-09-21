@@ -1,7 +1,6 @@
 """
 MCP Web Search & Page Fetch Server — 100% Free / No API Key Required.
-Powered entirely by DuckDuckGo Lite with async parsing, query sanitization,
-content/region filtering, and Markdown page extraction.
+Compatible with MCP SDK v1 and v2 (DuckDuckGo Lite).
 
 Install:
     pip install mcp httpx
@@ -15,9 +14,14 @@ import re
 import urllib.parse
 from html.parser import HTMLParser
 import httpx
-from mcp.server.fastmcp import FastMCP
 
-mcp = FastMCP("web-search")
+# Compatibility layer for MCP 2.x and MCP 1.x
+try:
+    from mcp.server.mcpserver import MCPServer
+except ImportError:
+    from mcp.server.fastmcp import FastMCP as MCPServer
+
+mcp = MCPServer("web-search")
 
 DEFAULT_HEADERS = {
     "User-Agent": (
@@ -36,7 +40,7 @@ SAFE_SEARCH_MAP = {
     "off": "-1",
 }
 
-# Regex patterns to catch accidental API keys, tokens, and credentials
+# Patterns to strip accidental tokens/keys before transmission
 SENSITIVE_DATA_PATTERNS = [
     r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",
     r"\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{36,}\b",
@@ -47,10 +51,7 @@ SENSITIVE_DATA_PATTERNS = [
 
 
 def sanitize_query(query: str) -> tuple[str, bool]:
-    """
-    Strips accidental private credentials or emails from queries before transmission.
-    Returns the sanitized string and a boolean indicating whether redaction occurred.
-    """
+    """Strips accidental private credentials or emails from queries before transmission."""
     sanitized = query
     redacted = False
     for pattern in SENSITIVE_DATA_PATTERNS:
@@ -138,7 +139,7 @@ class DDGLiteParser(HTMLParser):
 
 
 class HTMLToMarkdownExtractor(HTMLParser):
-    """Converts HTML page content into clean, readable Markdown for LLMs."""
+    """Converts HTML page content into clean Markdown for LLMs."""
 
     def __init__(self):
         super().__init__()
@@ -229,7 +230,7 @@ async def fetch_duckduckgo(
         async with httpx.AsyncClient(headers=DEFAULT_HEADERS, timeout=12.0, follow_redirects=True) as client:
             resp = await client.get(url)
             if resp.status_code in (403, 429):
-                return [{"error": "DuckDuckGo temporarily rate-limited requests from this IP. Retry in a few moments."}]
+                return [{"error": "DuckDuckGo temporarily rate-limited requests from this IP."}]
             resp.raise_for_status()
             html = resp.text
     except httpx.TimeoutException:
