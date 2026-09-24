@@ -10,10 +10,27 @@ Run:
 """
 
 import json
+import os
 import re
+import signal
+import sys
 import urllib.parse
 from html.parser import HTMLParser
 import httpx
+
+
+def _handle_exit(sig=None, frame=None):
+    """Exit cleanly with return code 0 on SIGTERM/SIGINT so MCP supervisors (e.g. agy) don't error."""
+    try:
+        sys.stdout.flush()
+        sys.stderr.flush()
+    except Exception:
+        pass
+    os._exit(0)
+
+
+signal.signal(signal.SIGTERM, _handle_exit)
+signal.signal(signal.SIGINT, _handle_exit)
 
 # Compatibility layer for MCP 2.x and MCP 1.x
 try:
@@ -376,4 +393,7 @@ async def fetch_page(url: str, max_chars: int = 6000) -> str:
 
 
 if __name__ == "__main__":
-    mcp.run(transport="stdio")
+    try:
+        mcp.run(transport="stdio")
+    finally:
+        _handle_exit()
