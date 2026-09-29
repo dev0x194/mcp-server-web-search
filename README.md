@@ -1,7 +1,7 @@
 # DuckDuckGo Web Search & Page Reader MCP Server
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/dev0x194/mcp-server-web-search/main/assets/banner.png" alt="Project Banner" width="100%" />
+  <img src="https://raw.githubusercontent.com/dev0x194/mcp-server-web-search/refs/heads/main/banner.png" alt="Project Banner" width="100%" />
   [![M8ven Score](https://m8ven.ai/badge/mcp/dev0x194/mcp-server-web-search)](https://m8ven.ai/mcp/dev0x194/mcp-server-web-search)
 </p>
 
