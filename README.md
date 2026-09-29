@@ -2,6 +2,7 @@
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/dev0x194/mcp-server-web-search/main/assets/banner.png" alt="Project Banner" width="100%" />
+  [![M8ven Score](https://m8ven.ai/badge/mcp/dev0x194-mcp-server-web-search-pz1iyn)](https://m8ven.ai/mcp/dev0x194-mcp-server-web-search-pz1iyn)
 </p>
 
 <p align="center">
